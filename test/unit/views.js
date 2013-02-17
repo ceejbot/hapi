@@ -30,13 +30,14 @@ describe('Views', function () {
             path: viewsPath,
             layout: true
         });
-        
+
         it('should work and not throw with valid (no layouts)', function (done) {
 
             var fn = (function () {
-                var html = testView.render('valid/test', { title: 'test', message: 'Hapi' });
-                expect(html).to.exist;
-                expect(html.length).above(1);
+                var html = testView.render('valid/test', { title: 'test', message: 'Hapi' }, function (html) {
+                    expect(html).to.exist;
+                    expect(html.length).above(1);
+                });
             });
 
             expect(fn).to.not.throw();
@@ -46,9 +47,10 @@ describe('Views', function () {
         it('should work and not throw with valid (with layouts)', function (done) {
 
             var fn = (function () {
-                var html = testViewWithLayouts.render('valid/test', { title: 'test', message: 'Hapi' });
-                expect(html).to.exist;
-                expect(html.length).above(1);
+                var html = testViewWithLayouts.render('valid/test', { title: 'test', message: 'Hapi' }, function (html) {
+                    expect(html).to.exist;
+                    expect(html.length).above(1);
+                });
             });
 
             expect(fn).to.not.throw();
@@ -58,9 +60,10 @@ describe('Views', function () {
         it('should throw when referencing non existant partial (with layouts)', function (done) {
 
             var fn = (function () {
-                var html = testViewWithLayouts.render('invalid/test', { title: 'test', message: 'Hapi' });
-                expect(html).to.exist;
-                expect(html.length).above(1);
+                testViewWithLayouts.render('invalid/test', { title: 'test', message: 'Hapi' }, function (html) {
+                    expect(html).to.exist;
+                    expect(html.length).above(1);
+                });
             });
 
             expect(fn).to.throw();
@@ -70,9 +73,10 @@ describe('Views', function () {
         it('should throw when referencing non existant partial (no layouts)', function (done) {
 
             var fn = (function () {
-                var html = testView.render('invalid/test', { title: 'test', message: 'Hapi' });
-                expect(html).to.exist;
-                expect(html.length).above(1);
+                testView.render('invalid/test', { title: 'test', message: 'Hapi' }, function (html) {
+                    expect(html).to.exist;
+                    expect(html.length).above(1);
+                });
             });
 
             expect(fn).to.throw();
@@ -84,18 +88,21 @@ describe('Views', function () {
             var fn = (function () {
                 var opts = { title: 'test', message: 'Hapi' };
                 opts[testView.options.layoutKeyword] = 1;
-                var html = testViewWithLayouts.render('valid/test', opts);
+                testViewWithLayouts.render('valid/test', opts, function (html) {
+                    // no-op
+                });
             });
 
             expect(fn).to.throw();
             done();
         });
 
-        it('should throw on compile error (invalid template code)', function (done) {
+        it('should call back with error on compile error (invalid template code)', function (done) {
 
-            var error = testView.render('invalid/badmustache', { title: 'test', message: 'Hapi' });
-            expect(error instanceof Error).to.equal(true);
-            done();
+            testView.render('invalid/badmustache', { title: 'test', message: 'Hapi' }, function (error) {
+                expect(error instanceof Error).to.equal(true);
+                done();
+            });
         });
 
         it('should load partials and be able to render them', function (done) {
@@ -109,15 +116,16 @@ describe('Views', function () {
                     }
                 });
 
-                var html = tempView.render('testPartials', {});
-                expect(html).to.exist;
-                expect(html.length).above(1);
+                tempView.render('testPartials', {}, function (html) {
+                    expect(html).to.exist;
+                    expect(html.length).above(1);
+                });
             });
 
             expect(fn).to.not.throw();
             done();
         });
-        
+
         it('should load partials and render them EVEN if viewsPath has trailing slash', function (done) {
 
             var fn = (function () {
@@ -129,15 +137,16 @@ describe('Views', function () {
                     }
                 });
 
-                var html = tempView.render('testPartials', {});
-                expect(html).to.exist;
-                expect(html.length).above(1);
+                var html = tempView.render('testPartials', {}, function (html) {
+                    expect(html).to.exist;
+                    expect(html.length).above(1);
+                });
             });
 
             expect(fn).to.not.throw();
             done();
         });
-        
+
         it('should skip loading partial if engine does not have registerPartial method', function (done) {
 
             var fn = (function () {
@@ -152,14 +161,15 @@ describe('Views', function () {
                     }
                 });
 
-                var html = tempView.render('testPartials', {});
-                expect(html).to.exist;
-                expect(html.length).above(1);
-            })
+                var html = tempView.render('testPartials', {}, function (html) {
+                    expect(html).to.exist;
+                    expect(html.length).above(1);
+                });
+            });
 
             expect(fn).to.not.throw();
             done();
-        })
+        });
     });
 
     describe('#handler', function () {
