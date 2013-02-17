@@ -34,7 +34,7 @@ describe('Views', function () {
         it('should work and not throw with valid (no layouts)', function (done) {
 
             var fn = (function () {
-                var html = testView.render('valid/test', { title: 'test', message: 'Hapi' }, function (html) {
+                testView.render('valid/test', { title: 'test', message: 'Hapi' }, function (html) {
                     expect(html).to.exist;
                     expect(html.length).above(1);
                 });
@@ -47,7 +47,7 @@ describe('Views', function () {
         it('should work and not throw with valid (with layouts)', function (done) {
 
             var fn = (function () {
-                var html = testViewWithLayouts.render('valid/test', { title: 'test', message: 'Hapi' }, function (html) {
+                testViewWithLayouts.render('valid/test', { title: 'test', message: 'Hapi' }, function (html) {
                     expect(html).to.exist;
                     expect(html.length).above(1);
                 });
@@ -137,7 +137,7 @@ describe('Views', function () {
                     }
                 });
 
-                var html = tempView.render('testPartials', {}, function (html) {
+                tempView.render('testPartials', {}, function (html) {
                     expect(html).to.exist;
                     expect(html.length).above(1);
                 });
@@ -161,7 +161,7 @@ describe('Views', function () {
                     }
                 });
 
-                var html = tempView.render('testPartials', {}, function (html) {
+                tempView.render('testPartials', {}, function (html) {
                     expect(html).to.exist;
                     expect(html.length).above(1);
                 });
@@ -170,6 +170,76 @@ describe('Views', function () {
             expect(fn).to.not.throw();
             done();
         });
+    });
+
+    describe('#renderAsync', function () {
+
+        var asyncView = new Views({
+            path: viewsPath,
+            layout: false,
+            engines: {
+                'blade': {
+                    module: 'blade',
+                    extension: 'blade'
+                }
+            },
+            asyncCompile: true,
+            asyncRender: true,
+            cache: false
+        });
+
+        var asyncViewWithLayouts = new Views({
+            path: viewsPath,
+            layout: true,
+            layoutKeyword: 'content',
+            layoutFile: 'blade/layout.blade',
+            engines: {
+                'blade': {
+                    module: 'blade',
+                    extension: 'blade'
+                }
+            },
+            asyncCompile: true,
+            asyncRender: true,
+            cache: false
+        });
+
+        it('can render a valid template without a layout', function (done) {
+
+            asyncView.render('blade/valid', { title: 'test', message: 'Hapi' }, function (result) {
+                expect(result).to.exist;
+                expect(typeof result).equal('string');
+                expect(result.length).above(1);
+                expect(result.indexOf('<title>test</title>')).above(-1);
+                done();
+            });
+        });
+
+        it('can render a valid template with a layout', function (done) {
+
+            asyncViewWithLayouts.render('blade/content', { title: 'test', message: 'Hapi' }, function (result) {
+                expect(result).to.exist;
+                expect(typeof result).equal('string');
+                expect(result.length).above(1);
+                expect(result.indexOf('<title>test</title>')).above(-1);
+                expect(result.indexOf('rendered with a layout')).above(-1);
+                done();
+            });
+        });
+
+        it('responds with an error on an invalid template', function (done) {
+
+            asyncView.render('blade/incorrect', { title: 'test', message: 'Hapi' }, function (result) {
+                expect(result).to.exist;
+                expect(typeof result).equal('object');
+                expect(result.hasOwnProperty('isBoom')).equal(true);
+                expect(result.isBoom).equal(true);
+                expect(result.hasOwnProperty('message')).equal(true);
+                expect(result.message.indexOf('undefinedVariable is not defined')).equal(0);
+                done();
+            });
+        });
+
     });
 
     describe('#handler', function () {
