@@ -1,0 +1,9 @@
+<html>
+	<head>
+		<title>{title}</title>
+	</head>
+	<body>
+		<p>This is a valid jazz template.</p
+		<p>{message}</p>
+	</body>
+</html>

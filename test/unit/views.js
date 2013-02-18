@@ -172,7 +172,7 @@ describe('Views', function () {
         });
     });
 
-    describe('#renderAsync', function () {
+    describe('#blade templates (fully async)', function () {
 
         var asyncView = new Views({
             path: viewsPath,
@@ -236,6 +236,36 @@ describe('Views', function () {
                 expect(result.isBoom).equal(true);
                 expect(result.hasOwnProperty('message')).equal(true);
                 expect(result.message.indexOf('undefinedVariable is not defined')).equal(0);
+                done();
+            });
+        });
+
+    });
+
+    describe('#jazz templates (sync compile, async render)', function() {
+
+        var jazzView = new Views({
+            path: viewsPath,
+            layout: false,
+            engines: {
+                'jazz': {
+                    module: 'jazz',
+                    extension: 'jazz'
+                }
+            },
+            asyncCompile: false,
+            asyncRender: true,
+            cache: false
+        });
+
+        it('can render a jazz template', function(done) {
+
+            jazzView.render('jazz/valid', { title: 'test', message: 'Hapi' }, function (result) {
+                expect(result).to.exist;
+                expect(typeof result).equal('string');
+                expect(result.length).above(1);
+                expect(result.indexOf('<title>test</title>')).above(-1);
+                expect(result.indexOf('This is a valid jazz template.')).above(-1);
                 done();
             });
         });

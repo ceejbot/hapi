@@ -45,7 +45,8 @@
     "jade": "0.28.x",
     "blanket": "1.0.x",
     "travis-cov": "0.2.x",
-    "blade": "3.x"
+    "blade": "3.x",
+    "jazz": "*"
   },
   "scripts": {
     "test": "make test && make test-cov",
