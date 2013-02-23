@@ -31,7 +31,7 @@ describe('Views', function () {
             layout: true
         });
 
-        it('should handle omitting the options parameter', function (done) {
+        it('handles omitting the options parameter', function (done) {
 
             testView.render('valid/novars', {}, function (html) {
                 expect(html).to.exist;
@@ -41,7 +41,7 @@ describe('Views', function () {
 
         });
 
-        it('should handle omitting both context & options parameters', function (done) {
+        it('handles omitting both context & options parameters', function (done) {
 
             testView.render('valid/novars', function (html) {
                 expect(html).to.exist;
@@ -334,7 +334,7 @@ describe('Views', function () {
             });
         });
 
-        it('should respond with an error when referencing a non-existent layout', function (done) {
+        it('responds with an error when referencing a non-existent layout', function (done) {
 
             var missingLayoutView = new Views({
                 path: viewsPath,
